@@ -16,6 +16,9 @@ env/
 # Output generati
 merged.pdf
 
+# Pdf di test
+test-pdf/
+
 # IDE
 .vscode/
 .idea/
