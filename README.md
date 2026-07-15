@@ -23,7 +23,7 @@ Due interfacce sullo stesso motore: una da riga di comando e una grafica. Entram
 
 ## Caratteristiche
 
-- **Ordinamento naturale**: `cap1, cap2, cap10` — lo stesso ordine che mostra Esplora Risorse.
+- **Ordinamento naturale**: `cap1, cap2, cap10` - lo stesso ordine che mostra Esplora Risorse.
 - **Sommario opzionale**: bookmark navigabili con una voce per file, attivabili su richiesta.
 - **Doppia interfaccia**: CLI per script e automazioni, GUI per l'uso quotidiano.
 - **Robusto**: un PDF corrotto o protetto viene saltato con un avviso, senza far fallire il batch.
@@ -34,9 +34,9 @@ Due interfacce sullo stesso motore: una da riga di comando e una grafica. Entram
 ## Requisiti
 
 - Python 3.9 o superiore
-- [`pypdf`](https://pypi.org/project/pypdf/) — manipolazione dei PDF
-- `tkinter` — solo per la GUI. Incluso nell'installer ufficiale di Python su Windows e macOS; su Linux va installato a parte (`sudo apt install python3-tk` su Debian/Ubuntu).
-- [`pyinstaller`](https://pypi.org/project/pyinstaller/) — solo per creare gli eseguibili
+- [`pypdf`](https://pypi.org/project/pypdf/) - manipolazione dei PDF
+- `tkinter` - solo per la GUI. Incluso nell'installer ufficiale di Python su Windows e macOS; su Linux va installato a parte (`sudo apt install python3-tk` su Debian/Ubuntu).
+- [`pyinstaller`](https://pypi.org/project/pyinstaller/) - solo per creare gli eseguibili
 
 Gli eseguibili compilati non hanno alcun requisito: contengono già interprete e dipendenze.
 
@@ -104,7 +104,7 @@ Con l'eseguibile, `merge_pdf-cli.exe` al posto di `python cli_main.py`. Un doppi
 | `-o`, `--output` | `merged.pdf` | Nome o percorso del file di output |
 | `--outline` | disattivato | Crea il sommario |
 | `--no-pause` | disattivato | Non attende `INVIO` al termine |
-| `--version` | — | Mostra la versione |
+| `--version` | - | Mostra la versione |
 
 ### Codici di uscita
 
@@ -118,13 +118,13 @@ Con l'eseguibile, `merge_pdf-cli.exe` al posto di `python cli_main.py`. Un doppi
 
 ## Il sommario
 
-Con `--outline` (CLI) o la casella spuntata (GUI), il PDF risultante riceve un **outline**: l'indice navigabile che i lettori mostrano in una barra laterale — "Sommario" in Edge, "Segnalibri" in Acrobat. Ogni file unito diventa una voce, intitolata col nome del file senza estensione, che punta alla sua prima pagina.
+Con `--outline` (CLI) o la casella spuntata (GUI), il PDF risultante riceve un **outline**: l'indice navigabile che i lettori mostrano in una barra laterale - "Sommario" in Edge, "Segnalibri" in Acrobat. Ogni file unito diventa una voce, intitolata col nome del file senza estensione, che punta alla sua prima pagina.
 
 Utile per libri e raccolte di capitoli. Per un documento unico e continuo è di norma superfluo, da cui il default disattivato.
 
-> **Da non confondere con il pannello miniature.** Molti lettori, quando un PDF *non* ha outline, aprono di default il pannello che elenca tutte le pagine come anteprime. Vedere l'elenco completo delle pagine invece dei titoli dei file è precisamente il sintomo di un PDF **senza** sommario — non di un sommario malfunzionante.
+> **Da non confondere con il pannello miniature.** Molti lettori, quando un PDF *non* ha outline, aprono di default il pannello che elenca tutte le pagine come anteprime. Vedere l'elenco completo delle pagine invece dei titoli dei file è precisamente il sintomo di un PDF **senza** sommario - non di un sommario malfunzionante.
 
-Nota tecnica: `pypdf` **preserva** sempre gli outline che i PDF sorgente possiedono già, indipendentemente dal flag. Il flag controlla la creazione di voci *nuove*, una per file. Su PDF sorgente privi di bookmark propri — scansioni, export, pagine singole: il caso più comune — senza il flag il risultato non ha alcun sommario.
+Nota tecnica: `pypdf` **preserva** sempre gli outline che i PDF sorgente possiedono già, indipendentemente dal flag. Il flag controlla la creazione di voci *nuove*, una per file. Su PDF sorgente privi di bookmark propri - scansioni, export, pagine singole: il caso più comune - senza il flag il risultato non ha alcun sommario.
 
 ---
 
@@ -193,7 +193,7 @@ Windows Defender segnala occasionalmente i binari PyInstaller `--onefile`, perch
 pdf-merger/
 ├── merge_pdf/
 │   ├── __init__.py         # Export pubblici e versione
-│   ├── core.py             # Logica di merge — nessun I/O utente
+│   ├── core.py             # Logica di merge - nessun I/O utente
 │   ├── cli.py              # Entry point console
 │   └── gui.py              # Entry point tkinter
 ├── cli_main.py             # Launcher CLI per PyInstaller
@@ -211,7 +211,7 @@ Il principio è uno solo: **`core.py` non parla con l'utente.** Non stampa, non 
 - un callback `on_progress(str)` per i messaggi di avanzamento;
 - un oggetto `MergeResult` restituito al chiamante.
 
-La CLI collega il callback a `print`, la GUI lo collega a una text box. Stessa logica, due presentazioni. Se in `core.py` ci fosse anche un solo `print()`, la GUI erediterebbe output che non può mostrare — ed è per questo che la separazione non è estetica ma funzionale: è ciò che rende possibili due eseguibili senza duplicare una riga di logica.
+La CLI collega il callback a `print`, la GUI lo collega a una text box. Stessa logica, due presentazioni. Se in `core.py` ci fosse anche un solo `print()`, la GUI erediterebbe output che non può mostrare - ed è per questo che la separazione non è estetica ma funzionale: è ciò che rende possibili due eseguibili senza duplicare una riga di logica.
 
 I due `*_main.py` alla radice esistono perché PyInstaller richiede uno *script* come punto di ingresso, non un modulo di package.
 
@@ -275,7 +275,7 @@ if getattr(sys, "frozen", False):
 return Path.cwd()
 ```
 
-In un bundle `--onefile` l'eseguibile si autoestrae in una cartella temporanea e `__file__` punta **lì dentro**, non dove risiede il `.exe`. `sys.executable` punta sempre al `.exe` reale — esattamente ciò che serve quando l'utente fa doppio click sull'eseguibile posato nella cartella dei PDF.
+In un bundle `--onefile` l'eseguibile si autoestrae in una cartella temporanea e `__file__` punta **lì dentro**, non dove risiede il `.exe`. `sys.executable` punta sempre al `.exe` reale - esattamente ciò che serve quando l'utente fa doppio click sull'eseguibile posato nella cartella dei PDF.
 
 `sys.frozen` esiste **solo** dentro un bundle PyInstaller: è il modo standard per distinguere l'esecuzione da sorgente da quella da eseguibile.
 
@@ -313,4 +313,4 @@ Non importa `gui.py`. `tkinter` non è disponibile ovunque (server headless, alc
 
 ## Licenza
 
-MIT — vedi [LICENSE](LICENSE).
+MIT - vedi [LICENSE](LICENSE).
