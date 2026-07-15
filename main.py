@@ -1,5 +1,6 @@
 from pathlib import Path
 from pypdf import PdfWriter
+import argparse
 import re
 
 def natural_sort(element): 
@@ -9,7 +10,16 @@ def natural_sort(element):
     # splitta i numeri dalle parole e le converte secondo il criterio di convert
     alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
     return alphanum_key(file_name)
-    
+
+parser = argparse.ArgumentParser(
+                    prog='pdf-merge-cli',
+                    description='Merge pdfs in a folder',
+                    epilog='ciao ciao')
+
+parser.add_argument("-o", "--output", type=str, help="target folder for the merged file")
+args = parser.parse_args()
+
+output_file = args.output
 
 p = Path('test-pdf')
 files = list(p.glob('*.pdf'))
@@ -21,6 +31,6 @@ merger = PdfWriter()
 for pdf in sorted_files:
     merger.append(pdf)
 
-merger.write(p / "merged.pdf")
+merger.write(p / output_file)
 
 merger.close()
