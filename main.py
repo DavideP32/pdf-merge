@@ -1,15 +1,26 @@
 from pathlib import Path
-from pypdf import PdfWriter
+from pypdf import PdfWriter #, PdfReader
 import argparse
 import re
 
+# sort files with natural sort method
 def natural_sort(element): 
     file_name = element.name
-    # converte il testo a int se è solo numeri, altrimenti tutto in lowercase
-    convert = lambda text: int(text) if text.isdigit() else text.lower()
-    # splitta i numeri dalle parole e le converte secondo il criterio di convert
-    alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
-    return alphanum_key(file_name)
+    return split_pdf_name(file_name)
+
+# split strings and numbers and convert each of them
+def split_pdf_name(name):
+    list_parts_name = re.split('([0-9]+)', name)
+    new_list = []
+    for part in list_parts_name:
+        new_list.append(convert_text(part))
+    return new_list
+        
+# Convert text to int if number or lowercase if text
+def convert_text(text):
+    return int(text) if text.isdigit() else text.lower()
+
+    
 
 parser = argparse.ArgumentParser(
                     prog='pdf-merge-cli',
@@ -21,7 +32,6 @@ parser.add_argument("folder", type=str, help="source folder for the pdfs to be m
 parser.add_argument("--outline", help="optionally add outline to the merged pdf", action="store_true")
 args = parser.parse_args()
 
-input_folder = args.folder
 output_file = args.output
 
 if ("/" in output_file or "\\" in output_file):
@@ -34,8 +44,14 @@ sorted_files = sorted(files, key=natural_sort)
 
 merger = PdfWriter()
 
+
 for pdf in sorted_files:
-    merger.append(pdf)
+    # reader = PdfReader(pdf)
+    # number_of_pages = len(reader.pages)
+    merger.append(pdf, outline_item=pdf.stem if args.outline else None)
+    # if (args.outline):
+    #     merger.add_outline_item(pdf.stem, len(merger.pages) - number_of_pages)
+    # reader.close()
 
 Path(p / "merged").mkdir(exist_ok=True)
 merger.write(p / "merged" / output_file)
