@@ -1,7 +1,11 @@
 from pathlib import Path
 from pypdf import PdfWriter #, PdfReader
+from pypdf.errors import PdfStreamError
+import sys
 import argparse
 import re
+
+# --------------------------------- FUNCTIONS -------------------------------- #
 
 # sort files with natural sort method
 def natural_sort(element): 
@@ -20,7 +24,7 @@ def split_pdf_name(name):
 def convert_text(text):
     return int(text) if text.isdigit() else text.lower()
 
-    
+# --------------------------------- ARGPARSE --------------------------------- #
 
 parser = argparse.ArgumentParser(
                     prog='pdf-merge-cli',
@@ -32,28 +36,49 @@ parser.add_argument("folder", type=str, help="source folder for the pdfs to be m
 parser.add_argument("--outline", help="optionally add outline to the merged pdf", action="store_true")
 args = parser.parse_args()
 
-output_file = args.output
 
-if ("/" in output_file or "\\" in output_file):
+output_file_name = args.output
+
+if ("/" in output_file_name or "\\" in output_file_name):
     parser.error("Output file name should not contain path separators.")
 
-p = Path(args.folder)
-files = list(p.glob('*.pdf'))
-sorted_files = sorted(files, key=natural_sort)
 
+# ---------------------------- TAKE AND SORT FILES --------------------------- #
+
+path_input_files = Path(args.folder)
+
+if not path_input_files.is_dir():
+    print("The specified folder does not exist or is not a directory.", file=sys.stderr)
+    sys.exit(1)
+
+list_of_files = list(path_input_files.glob('*.pdf'))
+
+if not list_of_files:
+    print("No PDF file is present in the given folder.", file=sys.stderr)
+    sys.exit(1)
+
+output_path = path_input_files / "merged"
+output_path.mkdir(exist_ok=True)
+
+sorted_files = sorted(list_of_files, key=natural_sort)
+
+# -------------------------------- MERGE FILES ------------------------------- #
 
 merger = PdfWriter()
 
-
 for pdf in sorted_files:
-    # reader = PdfReader(pdf)
-    # number_of_pages = len(reader.pages)
-    merger.append(pdf, outline_item=pdf.stem if args.outline else None)
-    # if (args.outline):
-    #     merger.add_outline_item(pdf.stem, len(merger.pages) - number_of_pages)
-    # reader.close()
+    try:
+        # Add the PDF to the merger, optionally adding an outline item
+        merger.append(pdf, outline_item=pdf.stem if args.outline else None)
+    except PdfStreamError as e:
+        print(f"Error reading PDF file {pdf}: {e}", file=sys.stderr)
+        merger.close()
+        sys.exit(3)
 
-Path(p / "merged").mkdir(exist_ok=True)
-merger.write(p / "merged" / output_file)
+
+# ---------------------------- CREATE FILE IN PATH --------------------------- #
+
+merger.write(output_path / output_file_name)
+print(f"Merged PDF saved as {output_path / output_file_name}")
 
 merger.close()
