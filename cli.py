@@ -2,7 +2,7 @@ from pathlib import Path
 from pypdf import PdfWriter #, PdfReader
 import sys
 import argparse
-from core import create_directory, sort_files, merge_pdf, MergeError
+from core import validate_output_file_name, create_directory, sort_files, merge_pdf, MergeError, WrongFileNameError
 
 
 def main():
@@ -22,8 +22,12 @@ def main():
 
     output_file_name = args.output
 
-    if ("/" in output_file_name or "\\" in output_file_name):
-        parser.error("Output file name should not contain path separators.")
+    try:
+        validate_output_file_name(output_file_name)
+    except WrongFileNameError as e:
+        print(f"Error with the file name: {e}")
+        sys.exit(1)
+
 
 
     # ---------------------------- TAKE AND SORT FILES --------------------------- #

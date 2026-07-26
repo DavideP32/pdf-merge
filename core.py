@@ -5,8 +5,9 @@ import sys
 import re
 
 class MergeError(Exception): pass
+class WrongFileNameError(Exception): pass
 
-# --------------------------------- SORTING FUNCTIONS -------------------------------- #
+# ------------------------ SORTING FUNCTIONS -------------------------------- #
 
 # sort files with natural sort method
 def natural_sort(element): 
@@ -25,6 +26,13 @@ def split_pdf_name(name):
 def convert_text(text):
     return int(text) if text.isdigit() else text.lower()
 
+# ------------------------- VALIDATE OUTPUT FILE NAME ------------------------ #
+def validate_output_file_name(output_file_name):
+    if ("/" in output_file_name or "\\" in output_file_name):
+        raise WrongFileNameError("Output file name should not contain path separators.") 
+
+
+# ------------------------------- CREATE & SORT ------------------------------ #
 def create_directory(path_input_files, output_folder_name):
     output_path = path_input_files / output_folder_name
     output_path.mkdir(exist_ok=True)
