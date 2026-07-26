@@ -1,7 +1,6 @@
 from pathlib import Path
-from pypdf import PdfWriter #, PdfReader
+from pypdf import PdfWriter
 from pypdf.errors import PdfStreamError
-import sys
 import re
 
 class MergeError(Exception): pass
@@ -27,9 +26,12 @@ def convert_text(text):
     return int(text) if text.isdigit() else text.lower()
 
 # ------------------------- VALIDATE OUTPUT FILE NAME ------------------------ #
-def validate_output_file_name(output_file_name):
+def validate_and_correct_output_file_name(output_file_name):
     if ("/" in output_file_name or "\\" in output_file_name):
-        raise WrongFileNameError("Output file name should not contain path separators.") 
+        raise WrongFileNameError("Output file name should not contain path separators.")
+    if not output_file_name.endswith(".pdf"):
+        output_file_name += ".pdf"
+    return output_file_name
 
 
 # ------------------------------- CREATE & SORT ------------------------------ #

@@ -1,8 +1,7 @@
 from pathlib import Path
-from pypdf import PdfWriter #, PdfReader
 import sys
 import argparse
-from core import validate_output_file_name, create_directory, sort_files, merge_pdf, MergeError, WrongFileNameError
+from core import validate_and_correct_output_file_name, create_directory, sort_files, merge_pdf, MergeError, WrongFileNameError
 
 
 def main():
@@ -23,12 +22,10 @@ def main():
     output_file_name = args.output
 
     try:
-        validate_output_file_name(output_file_name)
+        output_file_name = validate_and_correct_output_file_name(output_file_name)
     except WrongFileNameError as e:
-        print(f"Error with the file name: {e}")
+        print(f"Error with the file name: {e}", file=sys.stderr)
         sys.exit(1)
-
-
 
     # ---------------------------- TAKE AND SORT FILES --------------------------- #
 
