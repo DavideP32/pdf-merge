@@ -1,8 +1,10 @@
 from core import validate_and_correct_output_file_name, create_directory, sort_files, merge_pdf, MergeError, WrongFileNameError
 from pathlib import Path
 import tkinter as tk
+from tkinter import ttk
 from tkinter import filedialog as fd
 from tkinter import messagebox
+import sv_ttk
 
 class MergeApp:
     """
@@ -26,27 +28,53 @@ class MergeApp:
         self.checkbox_outline = tk.BooleanVar()
         self.output_folder_name = "merged"
 
-        # Button to select folder with pdfs
-        button_select_folder = tk.Button(window, text="Select Folder", command=self.select_folder, font=('calibre',10,'normal'))
-        button_select_folder.pack(pady=10)
+        # sv-ttk applica il tema Windows 11 a tutti i widget ttk in una riga.
+        # Sostituisce ttk.Style()/theme_use/configure: non serve stilare a mano.
+        sv_ttk.set_theme("dark")        # "light" o "dark"
 
+        # Frame contenitore con padding: da' il margine dai bordi della finestra.
+        # Tutti i widget vanno dentro questo frame, non attaccati direttamente a window.
+        container = ttk.Frame(window, padding=24)
+        container.grid(row=0, column=0, sticky="nsew")   # sticky nsew: il frame riempie la cella
+
+        # La cella (0,0) della finestra deve espandersi, cosi' il frame la riempie
+        window.rowconfigure(0, weight=1)
+        window.columnconfigure(0, weight=1)
+
+        # Dentro il container: solo la colonna 1 (i campi) cresce col ridimensionamento.
+        # La colonna 0 (etichette) e la colonna 2 (bottoni) restano alla loro larghezza.
+        container.columnconfigure(1, weight=1)
+
+        # Layout a griglia: colonna 0 = etichette, colonna 1 = campi, colonna 2 = bottoni.
+        # Ogni colonna ha un significato fisso, cosi' le righe restano allineate.
+
+        # Riga 0: etichetta | entry readonly col path | bottone Sfoglia
+        ttk.Label(container, text="Source folder:").grid(row=0, column=0, sticky="w")
         #  Entry readonly to print the selected folder
-        text_input_folder = tk.Entry(window, textvariable=self.input_folder_name_var, width=100, font=('calibre',10,'normal'))
-        text_input_folder.pack(pady=5)
+        text_input_folder = ttk.Entry(container, textvariable=self.input_folder_name_var)
+        text_input_folder.grid(row=0, column=1, sticky="ew", padx=(8, 8))   # sticky ew: si allarga coi campi
         text_input_folder.config(state='readonly')
+        # Button to select folder with pdfs
+        button_select_folder = ttk.Button(container, text="Select Folder", command=self.select_folder)
+        button_select_folder.grid(row=0, column=2)
 
+        # Riga 1: etichetta | entry per il nome (occupa anche la colonna 2, qui non c'e' bottone)
+        lable_output_file = ttk.Label(container, text="Output File Name")
+        lable_output_file.grid(row=1, column=0, sticky="w", pady=(12, 0))
         # Entry for writing the name of the file
-        text_output_file = tk.Entry(window, textvariable=self.output_file_name_var, font=('calibre',10,'normal'))
-        text_output_file.pack(pady=5)
+        text_output_file = ttk.Entry(container, textvariable=self.output_file_name_var)
+        text_output_file.grid(row=1, column=1, columnspan=2, sticky="ew", padx=(8, 0), pady=(12, 0))
 
+        # Riga 2: checkbox, allineata a sinistra sotto i campi
         # Checkbox to enable/disable outline
-        checkbutton = tk.Checkbutton(window, text="Create Outline", variable=self.checkbox_outline, 
-                                onvalue=True, offvalue=False, font=('calibre',10,'normal'))
-        checkbutton.pack(pady=5)
+        checkbutton = ttk.Checkbutton(container, text="Create Outline", variable=self.checkbox_outline, 
+                                onvalue=True, offvalue=False)
+        checkbutton.grid(row=2, column=1, columnspan=2, sticky="w", padx=(8, 0), pady=(16, 0))
 
+        # Riga 3: bottone finale, allineato a destra
         # Final OK button to merge
-        ok_button = tk.Button(window, text="OK", command=self.run_merge)
-        ok_button.pack(pady=10)
+        ok_button = ttk.Button(container, text="OK", command=self.run_merge)
+        ok_button.grid(row=3, column=2, sticky="e", pady=(24, 0))
 
 
     def select_folder(self):
@@ -119,8 +147,10 @@ def main():
     """
 
     window = tk.Tk()
-    window.geometry("1000x600")
+    window.geometry("600x400")
+    window.minsize(480, 320)   # impedisce di rimpicciolire la finestra fino a rompere il layout
     window.title("Pdf Toolkit")
+
     MergeApp(window)
 
     # The loop

@@ -1,0 +1,1 @@
+pyinstaller --onefile --windowed --collect-all sv_ttk --name merge_pdf-gui gui_main.py
